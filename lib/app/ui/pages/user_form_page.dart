@@ -9,23 +9,23 @@ class UserFormPage extends StatelessWidget {
 
   UserFormPage({super.key, this.user});
 
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _ageController = TextEditingController();
-  final TextEditingController _genderController = TextEditingController();
-  final TextEditingController _countryController = TextEditingController();
-  final TextEditingController _cityController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
-    if (user != null) {
-      _nameController.text = user!.name;
-      _emailController.text = user!.email;
-      _ageController.text = user!.age.toString();
-      _genderController.text = user!.gender;
-      _countryController.text = user!.country;
-      _cityController.text = user!.city;
-    }
+    final TextEditingController nameController =
+        TextEditingController(text: user?.name ?? '');
+    final TextEditingController emailController =
+        TextEditingController(text: user?.email ?? '');
+    final TextEditingController ageController =
+        TextEditingController(text: user?.age.toString() ?? '');
+    final TextEditingController genderController =
+        TextEditingController(text: user?.gender ?? '');
+    final TextEditingController countryController =
+        TextEditingController(text: user?.country ?? '');
+    final TextEditingController cityController =
+        TextEditingController(text: user?.city ?? '');
+
+    final List<String> genders = ['Masculino', 'Feminino'];
+    final List<String> countries = ['Brasil', 'Argentina'];
 
     return Scaffold(
       appBar: AppBar(
@@ -37,28 +37,84 @@ class UserFormPage extends StatelessWidget {
           child: Column(
             children: [
               TextFormField(
-                controller: _nameController,
+                controller: nameController,
                 decoration: const InputDecoration(labelText: 'Nome'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor, insira um nome';
+                  }
+                  return null;
+                },
               ),
               TextFormField(
-                controller: _emailController,
+                controller: emailController,
                 decoration: const InputDecoration(labelText: 'E-mail'),
+                validator: (value) {
+                  if (value == null || value.isEmpty || !value.contains('@')) {
+                    return 'Por favor, insira um e-mail válido';
+                  }
+                  return null;
+                },
               ),
               TextFormField(
-                controller: _ageController,
+                controller: ageController,
                 decoration: const InputDecoration(labelText: 'Idade'),
                 keyboardType: TextInputType.number,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor, insira a idade';
+                  }
+                  return null;
+                },
               ),
-              TextFormField(
-                controller: _genderController,
+              DropdownButtonFormField<String>(
+                value: genderController.text.isEmpty
+                    ? null
+                    : genderController.text,
+                items: genders.map((String gender) {
+                  return DropdownMenuItem<String>(
+                    value: gender,
+                    child: Text(gender),
+                  );
+                }).toList(),
+                onChanged: (String? value) {
+                  if (value != null) {
+                    genderController.text = value;
+                  }
+                },
                 decoration: const InputDecoration(labelText: 'Gênero'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor, selecione um gênero';
+                  }
+                  return null;
+                },
               ),
-              TextFormField(
-                controller: _countryController,
+              DropdownButtonFormField<String>(
+                value: countryController.text.isEmpty
+                    ? null
+                    : countryController.text,
+                items: countries.map((String country) {
+                  return DropdownMenuItem<String>(
+                    value: country,
+                    child: Text(country),
+                  );
+                }).toList(),
+                onChanged: (String? value) {
+                  if (value != null) {
+                    countryController.text = value;
+                  }
+                },
                 decoration: const InputDecoration(labelText: 'País'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor, selecione um país';
+                  }
+                  return null;
+                },
               ),
               TextFormField(
-                controller: _cityController,
+                controller: cityController,
                 decoration: const InputDecoration(labelText: 'Cidade'),
               ),
               const SizedBox(height: 20),
@@ -68,35 +124,38 @@ class UserFormPage extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () {
                       // Limpar campos
-                      _nameController.clear();
-                      _emailController.clear();
-                      _ageController.clear();
-                      _genderController.clear();
-                      _countryController.clear();
-                      _cityController.clear();
+                      nameController.clear();
+                      emailController.clear();
+                      ageController.clear();
+                      genderController.clear();
+                      countryController.clear();
+                      cityController.clear();
                     },
                     child: const Text('Limpar'),
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      // Salvar usuário
-                      final newUser = User(
-                        id: user != null ? user!.id : 0,
-                        name: _nameController.text,
-                        email: _emailController.text,
-                        age: int.tryParse(_ageController.text) ?? 0,
-                        gender: _genderController.text,
-                        country: _countryController.text,
-                        city: _cityController.text,
-                      );
+                      // Validar formulário
+                      if (Form.of(context).validate()) {
+                        // Salvar usuário
+                        final newUser = User(
+                          id: user != null ? user!.id : 0,
+                          name: nameController.text,
+                          email: emailController.text,
+                          age: int.tryParse(ageController.text) ?? 0,
+                          gender: genderController.text,
+                          country: countryController.text,
+                          city: cityController.text,
+                        );
 
-                      if (user == null) {
-                        userController.addUser(newUser);
-                      } else {
-                        userController.updateUser(newUser);
+                        if (user == null) {
+                          userController.addUser(newUser);
+                        } else {
+                          userController.updateUser(newUser);
+                        }
+
+                        Get.back();
                       }
-
-                      Get.back();
                     },
                     child: const Text('Salvar'),
                   ),
