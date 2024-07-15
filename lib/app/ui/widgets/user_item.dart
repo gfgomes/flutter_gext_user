@@ -19,7 +19,7 @@ class UserItem extends StatelessWidget {
         onPressed: () {
           // Excluir usuário
           // Aqui você pode adicionar um dialog de confirmação, se necessário
-          Get.find<UserController>().deleteUser(user.id);
+          Get.find<UserController>().deleteUser(user.uuid);
         },
       ),
       onTap: () {

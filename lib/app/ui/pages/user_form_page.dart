@@ -122,6 +122,12 @@ class UserFormPage extends StatelessWidget {
                 TextFormField(
                   controller: cityController,
                   decoration: const InputDecoration(labelText: 'Cidade'),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Por favor, insira uma cidade';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 20),
                 Row(
@@ -145,7 +151,7 @@ class UserFormPage extends StatelessWidget {
                         if (formKey.currentState!.validate()) {
                           // Salvar usuário
                           final newUser = User(
-                            id: user != null ? user!.id : 0,
+                            uuid: user != null ? user!.uuid.toString() : '0',
                             name: nameController.text,
                             email: emailController.text,
                             age: int.tryParse(ageController.text) ?? 0,

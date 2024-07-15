@@ -41,6 +41,9 @@ dependencies:
   # Pacote para obter o diretório de documentos do dispositivo
   path_provider: ^2.0.2
 
+  # Pacote para geração de UUID para identificação de registros únicos, melhor opção para sistemas distribuidos
+  uuid: ^3.0.7
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

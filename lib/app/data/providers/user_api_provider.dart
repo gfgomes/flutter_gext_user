@@ -1,9 +1,14 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:path_provider/path_provider.dart';
+import 'package:uuid/uuid.dart';
 import '../models/user.dart';
 
 class UserApiProvider {
   late List<User> _users;
+  late String _filePath;
+  final Uuid _uuid = const Uuid();
 
   UserApiProvider() {
     _users = [];
@@ -12,15 +17,28 @@ class UserApiProvider {
 
   Future<void> _init() async {
     try {
-      String jsonData =
-          await rootBundle.loadString('lib/app/data/database/database.json');
-      Map<String, dynamic> data = json.decode(jsonData);
-      List<dynamic> usersJson = data['users'] ?? [];
+      final directory = await getApplicationDocumentsDirectory();
+      _filePath = '${directory.path}/database.json';
 
-      _users = usersJson.map((json) => User.fromJson(json)).toList();
+      final file = File(_filePath);
+      if (await file.exists()) {
+        String jsonData = await file.readAsString();
+        _loadUsersFromJson(jsonData);
+      } else {
+        String jsonData =
+            await rootBundle.loadString('lib/app/data/database/database.json');
+        await file.writeAsString(jsonData);
+        _loadUsersFromJson(jsonData);
+      }
     } catch (e) {
-      print('Erro ao carregar dados do arquivo JSON: $e');
+      print('Erro ao inicializar dados: $e');
     }
+  }
+
+  void _loadUsersFromJson(String jsonData) {
+    Map<String, dynamic> data = json.decode(jsonData);
+    List<dynamic> usersJson = data['users'] ?? [];
+    _users = usersJson.map((json) => User.fromJson(json)).toList();
   }
 
   List<User> getUsers() {
@@ -29,6 +47,7 @@ class UserApiProvider {
 
   Future<void> addUser(User newUser) async {
     try {
+      newUser.uuid = _uuid.v4(); // Gera um novo UUID para o usuário
       _users.add(newUser);
       await _saveData();
     } catch (e) {
@@ -38,7 +57,7 @@ class UserApiProvider {
 
   Future<void> updateUser(User updatedUser) async {
     try {
-      int index = _users.indexWhere((user) => user.id == updatedUser.id);
+      int index = _users.indexWhere((user) => user.uuid == updatedUser.uuid);
       if (index != -1) {
         _users[index] = updatedUser;
         await _saveData();
@@ -48,9 +67,9 @@ class UserApiProvider {
     }
   }
 
-  Future<void> deleteUser(int userId) async {
+  Future<void> deleteUser(String userId) async {
     try {
-      _users.removeWhere((user) => user.id == userId);
+      _users.removeWhere((user) => user.uuid == userId);
       await _saveData();
     } catch (e) {
       print('Erro ao deletar usuário: $e');
@@ -61,8 +80,8 @@ class UserApiProvider {
     try {
       String jsonData =
           json.encode({'users': _users.map((user) => user.toJson()).toList()});
-      // Escrever de volta no arquivo no assets não é possível diretamente
-      // Normalmente você gravaria em um local de armazenamento persistente, como o diretório de documentos do dispositivo
+      final file = File(_filePath);
+      await file.writeAsString(jsonData);
     } catch (e) {
       print('Erro ao salvar dados no arquivo JSON: $e');
     }

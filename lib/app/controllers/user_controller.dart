@@ -13,7 +13,7 @@ class UserController extends GetxController {
   }
 
   Future<void> fetchUsers() async {
-    final List<User> fetchedUsers = await _userService.getUsers();
+    final List<User> fetchedUsers = _userService.getUsers();
     users.assignAll(fetchedUsers);
   }
 
@@ -27,8 +27,8 @@ class UserController extends GetxController {
     fetchUsers();
   }
 
-  Future<void> deleteUser(int userId) async {
-    await _userService.deleteUser(userId);
+  Future<void> deleteUser(String userUuid) async {
+    await _userService.deleteUser(userUuid);
     fetchUsers();
   }
 }

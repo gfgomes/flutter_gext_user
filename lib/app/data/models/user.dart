@@ -1,5 +1,5 @@
 class User {
-  int id;
+  String uuid;
   String name;
   String email;
   int age;
@@ -8,7 +8,7 @@ class User {
   String city;
 
   User({
-    required this.id,
+    required this.uuid,
     required this.name,
     required this.email,
     required this.age,
@@ -18,7 +18,7 @@ class User {
   });
 
   factory User.fromJson(Map<String, dynamic> json) => User(
-        id: json['id'],
+        uuid: json['id'],
         name: json['name'],
         email: json['email'],
         age: json['age'],
@@ -28,7 +28,7 @@ class User {
       );
 
   Map<String, dynamic> toJson() => {
-        'id': id,
+        'id': uuid,
         'name': name,
         'email': email,
         'age': age,
