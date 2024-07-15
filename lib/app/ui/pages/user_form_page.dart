@@ -5,9 +5,9 @@ import 'package:get/get.dart';
 
 class UserFormPage extends StatelessWidget {
   final UserController userController = Get.find();
-  final User? user;
+  final User? user = Get.arguments;
 
-  UserFormPage({super.key, this.user});
+  UserFormPage({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -3,7 +3,7 @@ import 'package:flutter_gext_user/app/data/providers/user_api_provider.dart';
 import 'package:get/get.dart';
 
 class UserController extends GetxController {
-  final UserApiProvider _userService = UserApiProvider();
+  final UserApiProvider _userApiProvider = UserApiProvider();
   final users = <User>[].obs;
 
   @override
@@ -13,22 +13,22 @@ class UserController extends GetxController {
   }
 
   Future<void> fetchUsers() async {
-    final List<User> fetchedUsers = _userService.getUsers();
+    final List<User> fetchedUsers = _userApiProvider.getUsers();
     users.assignAll(fetchedUsers);
   }
 
   Future<void> addUser(User newUser) async {
-    await _userService.addUser(newUser);
+    await _userApiProvider.addUser(newUser);
     fetchUsers();
   }
 
   Future<void> updateUser(User updatedUser) async {
-    await _userService.updateUser(updatedUser);
+    await _userApiProvider.updateUser(updatedUser);
     fetchUsers();
   }
 
   Future<void> deleteUser(String userUuid) async {
-    await _userService.deleteUser(userUuid);
+    await _userApiProvider.deleteUser(userUuid);
     fetchUsers();
   }
 }
