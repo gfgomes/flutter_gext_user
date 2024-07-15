@@ -17,10 +17,12 @@ class UserFormPage extends StatelessWidget {
         TextEditingController(text: user?.email ?? '');
     final TextEditingController ageController =
         TextEditingController(text: user?.age.toString() ?? '');
-    final TextEditingController genderController =
-        TextEditingController(text: user?.gender ?? '');
-    final TextEditingController countryController =
-        TextEditingController(text: user?.country ?? '');
+    // Use ValueNotifier for gender and country
+    final ValueNotifier<String?> genderNotifier =
+        ValueNotifier<String?>(user?.gender);
+    final ValueNotifier<String?> countryNotifier =
+        ValueNotifier<String?>(user?.country);
+
     final TextEditingController cityController =
         TextEditingController(text: user?.city ?? '');
 
@@ -73,50 +75,52 @@ class UserFormPage extends StatelessWidget {
                     return null;
                   },
                 ),
-                DropdownButtonFormField<String>(
-                  value: genderController.text.isEmpty
-                      ? null
-                      : genderController.text,
-                  items: genders.map((String gender) {
-                    return DropdownMenuItem<String>(
-                      value: gender,
-                      child: Text(gender),
+                ValueListenableBuilder<String?>(
+                  valueListenable: genderNotifier,
+                  builder: (context, value, child) {
+                    return DropdownButtonFormField<String>(
+                      value: value,
+                      items: genders.map((String gender) {
+                        return DropdownMenuItem<String>(
+                          value: gender,
+                          child: Text(gender),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        genderNotifier.value = newValue;
+                      },
+                      decoration: const InputDecoration(labelText: 'Gênero'),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Por favor, selecione um gênero';
+                        }
+                        return null;
+                      },
                     );
-                  }).toList(),
-                  onChanged: (String? value) {
-                    if (value != null) {
-                      genderController.text = value;
-                    }
-                  },
-                  decoration: const InputDecoration(labelText: 'Gênero'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Por favor, selecione um gênero';
-                    }
-                    return null;
                   },
                 ),
-                DropdownButtonFormField<String>(
-                  value: countryController.text.isEmpty
-                      ? null
-                      : countryController.text,
-                  items: countries.map((String country) {
-                    return DropdownMenuItem<String>(
-                      value: country,
-                      child: Text(country),
+                ValueListenableBuilder<String?>(
+                  valueListenable: countryNotifier,
+                  builder: (context, value, child) {
+                    return DropdownButtonFormField<String>(
+                      value: value,
+                      items: countries.map((String country) {
+                        return DropdownMenuItem<String>(
+                          value: country,
+                          child: Text(country),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) {
+                        countryNotifier.value = newValue;
+                      },
+                      decoration: const InputDecoration(labelText: 'País'),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Por favor, selecione um país';
+                        }
+                        return null;
+                      },
                     );
-                  }).toList(),
-                  onChanged: (String? value) {
-                    if (value != null) {
-                      countryController.text = value;
-                    }
-                  },
-                  decoration: const InputDecoration(labelText: 'País'),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Por favor, selecione um país';
-                    }
-                    return null;
                   },
                 ),
                 TextFormField(
@@ -139,8 +143,8 @@ class UserFormPage extends StatelessWidget {
                         nameController.clear();
                         emailController.clear();
                         ageController.clear();
-                        genderController.clear();
-                        countryController.clear();
+                        genderNotifier.value = null;
+                        countryNotifier.value = null;
                         cityController.clear();
                       },
                       child: const Text('Limpar'),
@@ -155,8 +159,8 @@ class UserFormPage extends StatelessWidget {
                             name: nameController.text,
                             email: emailController.text,
                             age: int.tryParse(ageController.text) ?? 0,
-                            gender: genderController.text,
-                            country: countryController.text,
+                            gender: genderNotifier.value ?? '',
+                            country: countryNotifier.value ?? '',
                             city: cityController.text,
                           );
 
