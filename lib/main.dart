@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gext_user/app/Middleware/auth_middleware.dart';
-import 'package:flutter_gext_user/app/ui/pages/home_page.dart';
 import 'package:get/get.dart';
-import 'app/routes/app_routes.dart';
-import 'app/bindings/user_binding.dart';
-import 'app/utils/constants.dart';
+import 'package:flutter_gext_user/app/routes/app_routes.dart';
+import 'package:flutter_gext_user/app/bindings/user_binding.dart';
 
 void main() {
   runApp(const MyApp());
@@ -24,19 +21,6 @@ class MyApp extends StatelessWidget {
       defaultTransition: Transition.fade,
       smartManagement: SmartManagement.full,
       routingCallback: (routing) {},
-      // onGenerateRoute: (settings) {
-      //   if (settings.name == Routes.HOME) {
-      //     return GetPageRoute(
-      //       page: () => HomePage(),
-      //       settings: settings,
-      //       binding: UserBinding(),
-      //       parameter: {
-      //         'isProtected': 'true', // Exemplo de parâmetro de rota inicial
-      //       },
-      //     );
-      //   }
-      //   return null;
-      // },
     );
   }
 }

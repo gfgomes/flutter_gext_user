@@ -3,16 +3,18 @@ import 'dart:io';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
+
 import '../models/user.dart';
 
 class UserApiProvider {
   late List<User> _users;
   late String _filePath;
   final Uuid _uuid = const Uuid();
+  late Future<void> _initFuture;
 
   UserApiProvider() {
     _users = [];
-    _init();
+    _initFuture = _init();
   }
 
   Future<void> _init() async {
@@ -38,10 +40,11 @@ class UserApiProvider {
   void _loadUsersFromJson(String jsonData) {
     Map<String, dynamic> data = json.decode(jsonData);
     List<dynamic> usersJson = data['users'] ?? [];
-    _users = usersJson.map((json) => User.fromJson(json)).toList();
+    _users = usersJson.map((json) => User.fromMap(json)).toList();
   }
 
-  List<User> getUsers() {
+  Future<List<User>> getUsers() async {
+    await _initFuture; // Aguarde até que a inicialização seja concluída
     return _users;
   }
 
@@ -67,7 +70,7 @@ class UserApiProvider {
     }
   }
 
-  Future<void> deleteUser(String userId) async {
+  Future<void> deleteUserByUuid(String userId) async {
     try {
       _users.removeWhere((user) => user.uuid == userId);
       await _saveData();
@@ -79,7 +82,7 @@ class UserApiProvider {
   Future<void> _saveData() async {
     try {
       String jsonData =
-          json.encode({'users': _users.map((user) => user.toJson()).toList()});
+          json.encode({'users': _users.map((user) => user.toMap()).toList()});
       final file = File(_filePath);
       await file.writeAsString(jsonData);
     } catch (e) {

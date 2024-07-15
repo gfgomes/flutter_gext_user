@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gext_user/app/controllers/user_controller.dart';
 import 'package:flutter_gext_user/app/data/models/user.dart';
 import 'package:get/get.dart';
+import 'package:uuid/uuid.dart';
 
-class UserFormPage extends StatelessWidget {
-  final UserController userController = Get.find();
+class UserFormPageJson extends StatelessWidget {
+  final UserJsonController userController = Get.put(UserJsonController());
   final User? user = Get.arguments;
 
-  UserFormPage({super.key});
+  UserFormPageJson({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +34,8 @@ class UserFormPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(user == null ? 'Adicionar Usuário' : 'Editar Usuário'),
+        title: Text(
+            user == null ? 'Adicionar Usuário json' : 'Editar Usuário json'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -139,6 +141,7 @@ class UserFormPage extends StatelessWidget {
                   children: [
                     ElevatedButton(
                       onPressed: () {
+                        formKey.currentState!.reset();
                         // Limpar campos
                         nameController.clear();
                         emailController.clear();
@@ -155,7 +158,10 @@ class UserFormPage extends StatelessWidget {
                         if (formKey.currentState!.validate()) {
                           // Salvar usuário
                           final newUser = User(
-                            uuid: user != null ? user!.uuid.toString() : '0',
+                            id: user != null ? user!.id : 0,
+                            uuid: user != null
+                                ? user!.uuid.toString()
+                                : const Uuid().v4(),
                             name: nameController.text,
                             email: emailController.text,
                             age: int.tryParse(ageController.text) ?? 0,

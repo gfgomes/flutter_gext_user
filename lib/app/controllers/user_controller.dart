@@ -2,7 +2,7 @@ import 'package:flutter_gext_user/app/data/models/user.dart';
 import 'package:flutter_gext_user/app/data/providers/user_api_provider.dart';
 import 'package:get/get.dart';
 
-class UserController extends GetxController {
+class UserJsonController extends GetxController {
   final UserApiProvider _userApiProvider = UserApiProvider();
   final users = <User>[].obs;
 
@@ -13,7 +13,7 @@ class UserController extends GetxController {
   }
 
   Future<void> fetchUsers() async {
-    final List<User> fetchedUsers = _userApiProvider.getUsers();
+    final List<User> fetchedUsers = await _userApiProvider.getUsers();
     users.assignAll(fetchedUsers);
   }
 
@@ -27,8 +27,8 @@ class UserController extends GetxController {
     fetchUsers();
   }
 
-  Future<void> deleteUser(String userUuid) async {
-    await _userApiProvider.deleteUser(userUuid);
+  Future<void> deleteUserByUuid(String userUuid) async {
+    await _userApiProvider.deleteUserByUuid(userUuid);
     fetchUsers();
   }
 }

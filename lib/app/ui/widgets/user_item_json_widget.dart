@@ -4,10 +4,10 @@ import 'package:flutter_gext_user/app/data/models/user.dart';
 import 'package:flutter_gext_user/app/routes/app_routes.dart';
 import 'package:get/get.dart';
 
-class UserItem extends StatelessWidget {
+class UserItemJsonWidget extends StatelessWidget {
   final User user;
 
-  const UserItem({super.key, required this.user});
+  const UserItemJsonWidget({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -19,12 +19,12 @@ class UserItem extends StatelessWidget {
         onPressed: () {
           // Excluir usuário
           // Aqui você pode adicionar um dialog de confirmação, se necessário
-          Get.find<UserController>().deleteUser(user.uuid);
+          Get.find<UserJsonController>().deleteUserByUuid(user.uuid);
         },
       ),
       onTap: () {
         // Navegar para a página de edição do usuário
-        Get.toNamed(Routes.USER_FORM, arguments: user);
+        Get.toNamed(Routes.USER_FORM_JSON, arguments: user);
       },
     );
   }
